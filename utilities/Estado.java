@@ -1,7 +1,5 @@
 package utilities;
 
-import java.util.ArrayList;
-
 public class Estado {
     private int id;
     private String name;
@@ -9,7 +7,6 @@ public class Estado {
     private double y;
     private boolean isInitial;
     private boolean isFinal;
-    ArrayList<Transicao> transicoes;
     
     public Estado() {
     }
@@ -21,29 +18,6 @@ public class Estado {
     	setY(y);
     	setInitial(isInitial);
     	setFinal(isFinal);
-    	setTransicoes(new ArrayList<>());
-    }
-    
-    public Estado(int id, String name, double x, double y, boolean isInitial, boolean isFinal, ArrayList<Transicao> transicoes) {
-    	setId(id);
-    	setName(name);
-    	setX(x);
-    	setY(y);
-    	setInitial(isInitial);
-    	setFinal(isFinal);
-    	setTransicoes(transicoes);
-    }
-    
-    void addTransicao(Transicao transicao) {
-		transicoes.add(transicao);
-	}
-    
-    private void setTransicoes(ArrayList<Transicao> transicoes) {
-		this.transicoes = transicoes;
-	}
-    
-    private ArrayList<Transicao> getTransicoes() {
-    	return transicoes;
     }
     
     int getId() {
@@ -103,10 +77,6 @@ public class Estado {
 		sb.append(String.format("Y: %f\n", getY()));
 		sb.append(String.format("Inicial: %s\n", isInitial()));
 		sb.append(String.format("Final: %s\n", isFinal()));
-		sb.append("Transições: \n");
-		for (Transicao t : getTransicoes()) {
-			sb.append(t);
-		}
 		return sb.toString();
 	}
 }

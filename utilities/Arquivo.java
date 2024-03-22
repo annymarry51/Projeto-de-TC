@@ -45,22 +45,24 @@ public class Arquivo {
 
                     Estado estado = new Estado(id, name, x, y, isInitial, isFinal);
                     automato.addEstado(estado);
-
-                    NodeList listaTransicoes = doc.getElementsByTagName("transition");
-                    for (int j = 0; j < listaTransicoes.getLength(); j++) {
-                        Node noTransicao = listaTransicoes.item(j);
-                        if (noTransicao.getNodeType() == Node.ELEMENT_NODE) {
-                            Element elementoTransicao = (Element) noTransicao;
-                            int from = Integer.parseInt(elementoTransicao.getElementsByTagName("from").item(0).getTextContent());
-                            int to = Integer.parseInt(elementoTransicao.getElementsByTagName("to").item(0).getTextContent());
-                            String read = elementoTransicao.getElementsByTagName("read").item(0).getTextContent();
-                            
-                            if (automato.getEstados().get(i).getId() == from) {
-                            	Transicao transicao = new Transicao(from, to, read);
-                            	estado.addTransicao(transicao);
-                            }
-                        }
-                    }
+                }
+            }
+            
+            NodeList listaTransicoes = doc.getElementsByTagName("transition");
+            for (int j = 0; j < listaTransicoes.getLength(); j++) {
+                Node noTransicao = listaTransicoes.item(j);
+                if (noTransicao.getNodeType() == Node.ELEMENT_NODE) {
+                    Element elementoTransicao = (Element) noTransicao;
+                    int from = Integer.parseInt(elementoTransicao.getElementsByTagName("from").item(0).getTextContent());
+                    int to = Integer.parseInt(elementoTransicao.getElementsByTagName("to").item(0).getTextContent());
+                    String read = elementoTransicao.getElementsByTagName("read").item(0).getTextContent();
+                    
+                   	Transicao transicao = new Transicao(from, to, read);
+                   	automato.addTransicao(transicao);
+                   	
+                   	if (!read.equals("")) {
+                   		automato.getAlfabeto().add(read.charAt(0));
+                   	}
                 }
             }
             return automato;
