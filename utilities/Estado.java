@@ -24,6 +24,16 @@ public class Estado {
     	setTransicoes(new ArrayList<>());
     }
     
+    public Estado(int id, String name, double x, double y, boolean isInitial, boolean isFinal, ArrayList<Transicao> transicoes) {
+    	setId(id);
+    	setName(name);
+    	setX(x);
+    	setY(y);
+    	setInitial(isInitial);
+    	setFinal(isFinal);
+    	setTransicoes(transicoes);
+    }
+    
     void addTransicao(Transicao transicao) {
 		transicoes.add(transicao);
 	}
