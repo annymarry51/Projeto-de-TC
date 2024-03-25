@@ -1,49 +1,51 @@
 package utilities;
 
 public class Transicao {
-	private int from;
-    private int to;
+	private String from;
+    private String to;
     private String read;
 
     public Transicao() {
     }
 
-    public Transicao(int from, int to, String read) {
+    public Transicao(String from, String to, String read) {
         setFrom(from);
         setTo(to);
         setRead(read);
     }
 
-	private int getFrom() {
+	String getFrom() {
 		return from;
 	}
 
-	private void setFrom(int from) {
+	void setFrom(String from) {
 		this.from = from;
 	}
 
-	private int getTo() {
+	String getTo() {
 		return to;
 	}
 
-	private void setTo(int to) {
+	void setTo(String to) {
 		this.to = to;
 	}
 
-	private String getRead() {
+	String getRead() {
 		return read;
 	}
 
 	private void setRead(String read) {
 		this.read = read;
 	}
+	
+	boolean isLambda() {
+		return getRead().equals("");
+	}
     
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(String.format("From: %d \n", getFrom()));
-		sb.append(String.format("To: %d \n", getTo()));
-		sb.append(String.format("Read: %s \n", getRead()));
+		sb.append(String.format("From: %s -> To: %s, Read: %s \n", getFrom(), getTo(), getRead()));
 		return sb.toString();
 	}
 }

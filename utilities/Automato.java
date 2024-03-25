@@ -1,54 +1,79 @@
 package utilities;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Automato {
-    private ArrayList<Estado> estados;
-    private ArrayList<Transicao> transicoes;
-    private Set<Character> alfabeto;
+    private Set<Estado> estados;
+    private Set<Transicao> transicoes;
+    private Set<String> alfabeto;
+    private Set<Estado> estadosFinais;
     
 	public Automato() {
-    	setEstados(new ArrayList<>());
-    	setTransicoes(new ArrayList<>());
+    	setEstados(new HashSet<>());
+    	setTransicoes(new HashSet<>());
     	setAlfabeto(new HashSet<>());
     }
-    
-	Set<Character> getAlfabeto() {
+	
+	Set<Estado> getEstadosFinais() {
+		return estadosFinais;
+	}
+	
+	void setEstadosFinais(Set<Estado> estadosFinais) {
+		this.estadosFinais = estadosFinais;
+	}
+	
+	void addEstadoFinal(Estado e) {
+		if (estadosFinais == null)
+			setEstadosFinais(new HashSet<>());
+		estadosFinais.add(e);
+	}
+	
+	Set<String> getAlfabeto() {
 		return alfabeto;
 	}
 	
-	private void setAlfabeto(Set<Character> alfabeto) {
+	void setAlfabeto(Set<String> alfabeto) {
 		this.alfabeto = alfabeto;
 	}
 	
-    void addTransicao(Transicao transicao) {
-		transicoes.add(transicao);
+	void addSimbolo(String s) {
+		if (getAlfabeto() == null)
+			setAlfabeto(new HashSet<>());;
+		getAlfabeto().add(s);
+	}
+	
+	void addTransicao(Transicao t) {
+		if (transicoes == null)
+			setTransicoes(new HashSet<>());
+		transicoes.add(t);
 	}
     
-    private void setTransicoes(ArrayList<Transicao> transicoes) {
+    void setTransicoes(Set<Transicao> transicoes) {
 		this.transicoes = transicoes;
 	}
     
-    private ArrayList<Transicao> getTransicoes() {
+    Set<Transicao> getTransicoes() {
     	return transicoes;
     }
     
-    public Automato(ArrayList<Estado> estados) {
+    public Automato(Set<Estado> estados) {
     	setEstados(estados);
     }
 
-	ArrayList<Estado> getEstados() {
+	Set<Estado> getEstados() {
 		return estados;
 	}
 	
-	private void setEstados(ArrayList<Estado> estados) {
+	void setEstados(Set<Estado> estados) {
 		this.estados = estados;
 	}
 	
-	void addEstado(Estado estado) {
-		estados.add(estado);
+	void addEstado(Estado e) {
+		if (getEstados() == null)
+			setEstados(new HashSet<>());
+		estados.add(e);
 	}
 	
 	@Override
@@ -66,4 +91,83 @@ public class Automato {
 		
 		return sb.toString();
 	}
+
+	public Estado getEstadoInicial() {
+		for (Estado e : estados) {
+			if (e.isInitial()) {
+				return e;
+			}
+		}
+		return null;
+	}
+	
+	public void setEstadoInicial(Estado estadoInicial) {
+		estadoInicial.setInitial(true);
+	}
+
+	Estado getEstadoPorId(String id) {
+		for (Estado e : getEstados()) {
+			if (e.getId().equals(id)) {
+				return e;
+			}
+		}
+		return null;
+	}
+	
+	void preencheEstadosIniciaisEFinais() {
+		for (Estado e : getEstados()) {
+			if (e.isFinal())
+				addEstadoFinal(e);
+			if (e.isInitial())
+				setEstadoInicial(e);
+		}
+	}
+	
+	Set<Transicao> getTransicoesPorEstadoELetra(Estado e, String l) {
+		Set<Transicao> transicoes = new HashSet<>();
+		for (Transicao t : getTransicoes()) {
+			if (t.getFrom().equals(e.getId()) && t.getRead().equals(l))
+				transicoes.add(t);
+		}
+		return transicoes;
+	}
+	
+	Set<Transicao> getTransicoesPorEstado(Estado e) {
+		Set<Transicao> transicoes = new HashSet<>();
+		for (Transicao t : getTransicoes()) {
+			if (t.getFrom().equals(e.getId()))
+				transicoes.add(t);
+		}
+		return transicoes;
+	}
+	
+	boolean temLoop(Estado estadoInicial) {
+		Set<Transicao> transicoes = getTransicoesPorEstado(estadoInicial);
+		for (Transicao t : transicoes) {
+			if (t.getTo().equals(estadoInicial.getId()))
+				return true;
+		}
+		return false;
+	}
+	
+	boolean isAFN() {
+		  for (Transicao t : getTransicoes()) {
+		    for (Transicao tr : getTransicoes()) {
+		      if (t != tr &&  // Evita comparar a mesma transição consigo mesma
+		          t.getFrom().equals(tr.getFrom()) && 
+		          (t.getRead().equals(tr.getRead()) || t.getRead().isEmpty() && !tr.getRead().isEmpty())) {
+		        return true;
+		      }
+		    }
+		  }
+		  return false;
+		}
+	
+	void preencherPosicoes() {
+		for (Estado e : getEstados()) {
+			e.setX((int) ((Math.random() * 100) * Math.random() * 10));
+			e.setY((int) ((Math.random() * 100) * Math.random() * 10));
+		}
+	}
+
 }

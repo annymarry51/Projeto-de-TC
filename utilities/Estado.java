@@ -1,77 +1,121 @@
 package utilities;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Estado {
-    private int id;
+    private String id;
     private String name;
     private double x;
     private double y;
     private boolean isInitial;
     private boolean isFinal;
+    private Set<Estado> estadosCombinados;
     
     public Estado() {
     }
-
-    public Estado(int id, String name, double x, double y, boolean isInitial, boolean isFinal) {
+    
+    public Estado(String id, String name) {
     	setId(id);
     	setName(name);
+    }
+
+    public Estado(String id, String name, double x, double y, boolean isInitial, boolean isFinal) {
+    	this(id, name);
     	setX(x);
     	setY(y);
     	setInitial(isInitial);
     	setFinal(isFinal);
     }
     
-    int getId() {
+    String getId() {
 		return id;
 	}
 
-	private void setId(int id) {
+	void setId(String id) {
 		this.id = id;
 	}
 
-	private String getName() {
+	String getName() {
 		return name;
 	}
 
-	private void setName(String name) {
+	void setName(String name) {
 		this.name = name;
 	}
 
-	private double getX() {
+	double getX() {
 		return x;
 	}
 
-	private void setX(double x) {
+	void setX(double x) {
 		this.x = x;
 	}
 
-	private double getY() {
+	double getY() {
 		return y;
 	}
 
-	private void setY(double y) {
+	void setY(double y) {
 		this.y = y;
 	}
 
-	private boolean isInitial() {
-		return isInitial;
+	boolean isInitial() {
+		return isCombinado() ? verificaEstadoCombinadoInicial() : isInitial;
 	}
 
-	private void setInitial(boolean isInitial) {
+	void setInitial(boolean isInitial) {
 		this.isInitial = isInitial;
 	}
 
-	private boolean isFinal() {
-		return isFinal;
+	boolean isFinal() {
+		return isCombinado() ? verificaEstadosCombinados() : isFinal;
 	}
 
-	private void setFinal(boolean isFinal) {
+	void setFinal(boolean isFinal) {
 		this.isFinal = isFinal;
+	}
+	
+	Set<Estado> getEstadosCombinados() {
+		return estadosCombinados;
+	}
+	
+	void setEstadosCombinados(Set<Estado> estadosCombinados) {
+		this.estadosCombinados = estadosCombinados;
+	}
+	
+	boolean isCombinado() {
+		if (getEstadosCombinados() != null && getEstadosCombinados().size() > 0)
+			return true;
+		return false;
+	}
+	
+	boolean verificaEstadoCombinadoInicial() {
+		for (Estado e : getEstadosCombinados()) {
+			if (e.isInitial())
+				return getEstadosCombinados().size() == 1;
+		}
+		return false;
+	}
+	
+	boolean verificaEstadosCombinados() {
+		for (Estado e : getEstadosCombinados()) {
+			if (e.isFinal())
+				return true;
+		}
+		return false;
+	}
+	
+	void addEstadoCombinado(Estado estado) {
+		if (getEstadosCombinados() == null)
+			setEstadosCombinados(new HashSet<>());
+		getEstadosCombinados().add(estado);
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(String.format("ID: %d\n", getId()));
+		sb.append(String.format("ID: %s\n", getId()));
 		sb.append(String.format("Name: %s\n", getName()));
 		sb.append(String.format("X: %f\n", getX()));
 		sb.append(String.format("Y: %f\n", getY()));

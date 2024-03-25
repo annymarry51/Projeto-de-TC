@@ -1,14 +1,18 @@
 package utilities;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Element;
 
 public class Arquivo {
 	private String caminho;
@@ -21,6 +25,71 @@ public class Arquivo {
 		this.caminho = caminho;
 	}
 	
+	public static String obterCaminho() {
+		try {
+			FileNameExtensionFilter arqFiltro = new FileNameExtensionFilter("Somente arquivos .jff", ".jff");
+			JFileChooser escolhe = new JFileChooser();
+			escolhe.setAcceptAllFileFilterUsed(true);
+			escolhe.addChoosableFileFilter(arqFiltro);
+			escolhe.setDialogTitle("Selecione um arquivo .jff");
+			if (escolhe.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+				File arquivo = escolhe.getSelectedFile();
+				String caminho = arquivo.getAbsolutePath();
+				return caminho;
+			} else {
+				return null;
+			}
+		} catch (Exception e) {
+			System.out.println("Erro: " + e.getMessage());
+			return null;
+		}
+	}
+	
+	public static void exportarAutomato(Automato automato, String diretorio) throws IOException {
+        File arquivo = new File(diretorio);
+        FileWriter writer = new FileWriter(arquivo);
+
+        writer.write(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><structure>&#13;\n");
+        writer.write("\t<type>fa</type>&#13;\n");
+        writer.write("\t<automaton>&#13;\n");
+        writer.write("\t\t<!--The list of states.-->&#13;\n");
+
+        // Escreve os estados
+        for (Estado estado : automato.getEstados()) {
+            writer.write("\t\t<state id=\"" + estado.getId() + "\" name=\"" + estado.getName() + "\">&#13;\n");
+            writer.write("\t\t\t<x>" + estado.getX() + "</x>&#13;\n");
+            writer.write("\t\t\t<y>" + estado.getY() + "</y>&#13;\n");
+            if (estado.isInitial()) {
+                writer.write("\t\t\t<initial/>&#13;\n");
+            }
+            if (estado.isFinal()) {
+                writer.write("\t\t\t<final/>&#13;\n");
+            }
+            writer.write("\t\t</state>&#13;\n");
+        }
+
+        writer.write("\t\t<!--The list of transitions.-->&#13;\n");
+
+        // Escreve as transições
+        for (Transicao transicao : automato.getTransicoes()) {
+            writer.write("\t\t<transition>&#13;\n");
+            writer.write("\t\t\t<from>" + transicao.getFrom() + "</from>&#13;\n");
+            writer.write("\t\t\t<to>" + transicao.getTo() + "</to>&#13;\n");
+            // Caso a transição seja epsilon
+            if (transicao.getRead().isBlank()) {
+                writer.write("\t\t\t<read/>\n");
+            } else {
+                writer.write("\t\t\t<read>" + transicao.getRead() + "</read>&#13;\n");
+            }
+            writer.write("\t\t</transition>&#13;\n");
+        }
+
+        writer.write("\t</automaton>&#13;\n");
+        writer.write("</structure>");
+        writer.close();
+    }
+
 	public static Automato carregaArquivo(String caminho) {
 		try {
             File arquivoEntrada = new File(caminho);
@@ -36,7 +105,7 @@ public class Arquivo {
                 Node estadoNo = listaEstados.item(i);
                 if (estadoNo.getNodeType() == Node.ELEMENT_NODE) {
                     Element estadoElemento = (Element) estadoNo;
-                    int id = Integer.parseInt(estadoElemento.getAttribute("id"));
+                    String id = estadoElemento.getAttribute("id");
                     String name = estadoElemento.getAttribute("name");
                     double x = Double.parseDouble(estadoElemento.getElementsByTagName("x").item(0).getTextContent());
                     double y = Double.parseDouble(estadoElemento.getElementsByTagName("y").item(0).getTextContent());
@@ -53,15 +122,15 @@ public class Arquivo {
                 Node noTransicao = listaTransicoes.item(j);
                 if (noTransicao.getNodeType() == Node.ELEMENT_NODE) {
                     Element elementoTransicao = (Element) noTransicao;
-                    int from = Integer.parseInt(elementoTransicao.getElementsByTagName("from").item(0).getTextContent());
-                    int to = Integer.parseInt(elementoTransicao.getElementsByTagName("to").item(0).getTextContent());
+                    String from = elementoTransicao.getElementsByTagName("from").item(0).getTextContent();
+                    String to = elementoTransicao.getElementsByTagName("to").item(0).getTextContent();
                     String read = elementoTransicao.getElementsByTagName("read").item(0).getTextContent();
                     
                    	Transicao transicao = new Transicao(from, to, read);
                    	automato.addTransicao(transicao);
                    	
                    	if (!read.equals("")) {
-                   		automato.getAlfabeto().add(read.charAt(0));
+                   		automato.getAlfabeto().add(read);
                    	}
                 }
             }
