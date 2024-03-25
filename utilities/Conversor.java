@@ -154,6 +154,8 @@ public class Conversor {
     }
     
     public Automato getAFDdoAFN(Automato afn) {
-   		return converterAFNParaAFD(afn);
+    	if (afn.isAFN(afn))
+    		return converterAFNParaAFD(afn);
+    	return afn;
     }
 }

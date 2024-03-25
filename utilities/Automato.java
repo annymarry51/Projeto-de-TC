@@ -150,9 +150,9 @@ public class Automato {
 		return false;
 	}
 	
-	boolean isAFN() {
-		  for (Transicao t : getTransicoes()) {
-		    for (Transicao tr : getTransicoes()) {
+	boolean isAFN(Automato afn) {
+		  for (Transicao t : afn.getTransicoes()) {
+		    for (Transicao tr : afn.getTransicoes()) {
 		      if (t != tr &&  // Evita comparar a mesma transição consigo mesma
 		          t.getFrom().equals(tr.getFrom()) && 
 		          (t.getRead().equals(tr.getRead()) || t.getRead().isEmpty() && !tr.getRead().isEmpty())) {
