@@ -27,11 +27,11 @@ public class Automato {
 		transicoes.add(transicao);
 	}
     
-    private void setTransicoes(ArrayList<Transicao> transicoes) {
+    public void setTransicoes(ArrayList<Transicao> transicoes) {
 		this.transicoes = transicoes;
 	}
     
-    private ArrayList<Transicao> getTransicoes() {
+    public ArrayList<Transicao> getTransicoes() {
     	return transicoes;
     }
     
@@ -66,4 +66,6 @@ public class Automato {
 		
 		return sb.toString();
 	}
+
+
 }
