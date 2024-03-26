@@ -3,6 +3,7 @@ package utilities;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 
 public class Automato {
     private Set<Estado> estados;
@@ -42,6 +43,10 @@ public class Automato {
 		if (getAlfabeto() == null)
 			setAlfabeto(new HashSet<>());;
 		getAlfabeto().add(s);
+	}
+	
+	void removeSimbolo(String s) {
+		getAlfabeto().remove(s);
 	}
 	
 	void addTransicao(Transicao t) {
@@ -118,10 +123,31 @@ public class Automato {
 		for (Estado e : getEstados()) {
 			if (e.isFinal())
 				addEstadoFinal(e);
-			if (e.isInitial())
+			if (e.isInitial()) {
 				setEstadoInicial(e);
+			}
 		}
 	}
+	
+//	private Set<Transicao> fechoEpsilon(Transicao transicao, Automato automato) {
+//    	Set<Transicao> fecho = new HashSet<>();
+//    	fecho.add(transicao);
+//    	Stack<Transicao> pilha = new Stack<>();
+//    	pilha.push(transicao);
+//    	
+//    	while (!pilha.isEmpty()) {
+//    		Estado atual = pilha.pop();
+//    		Set<Transicao> transicoes = automato.getTransicoesPorEstadoELetra(atual, "");
+//    		for (Transicao t : transicoes) {
+//    			Estado proximo = automato.getEstadoPorId(t.getTo());
+//    			if (!fecho.contains(proximo)) {
+//    				fecho.add(proximo);
+//    				pilha.push(proximo);
+//    			}
+//    		}
+//    	}
+//    	return fecho;
+//    }
 	
 	Set<Transicao> getTransicoesPorEstadoELetra(Estado e, String l) {
 		Set<Transicao> transicoes = new HashSet<>();

@@ -128,15 +128,12 @@ public class Arquivo {
                     
                    	Transicao transicao = new Transicao(from, to, read);
                    	automato.addTransicao(transicao);
-                   	
-                   	if (!read.equals("")) {
-                   		automato.getAlfabeto().add(read);
-                   	}
+                   	automato.addSimbolo(read);
                 }
             }
             return automato;
         } catch (Exception e) {
-            e.printStackTrace();
+        	System.out.println("Arquivo nulo: " + e.getMessage());
         }
 		return null;
 	}

@@ -7,19 +7,25 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 public class Conversor {
     private HashMap<Estado, HashMap<String, Set<Estado>>> tabelaAFN;
     private HashMap<Estado, HashMap<String, Estado>> tabelaAFD;
     
     private void renomearIds(Automato automato) {
-    	for (Transicao t : automato.getTransicoes()) {
-    		t.setFrom(t.getFrom().replace(",", ""));
-    		t.setTo(t.getTo().replace(",", ""));
-    	}
-    	for (Estado e : automato.getEstados()) {
-    		e.setId(e.getId().replace(",", ""));
-    	}
+        for (Transicao t : automato.getTransicoes()) {
+        	t.setFrom(inverterString(t.getFrom()).replace(",", ""));
+            t.setTo(inverterString(t.getTo()).replace(",", ""));
+        }
+
+        for (Estado e : automato.getEstados()) {
+        	e.setId(inverterString(e.getId()).replace(",", ""));
+        }
+    }
+
+    private String inverterString(String str) {
+        return new StringBuilder(str).reverse().toString();
     }
     
     private Set<Estado> getEstadosPorLetra(Estado estado, String letra, Automato afn) {
@@ -60,8 +66,8 @@ public class Conversor {
     	tabelaAFN = new HashMap<>();
     	for (Estado estado : afn.getEstados()) {
     		HashMap<String, Set<Estado>> mapaSimbolos = new HashMap<>();
-    		for (String terminal : afn.getAlfabeto()) {
-    			mapaSimbolos.put(terminal, getEstadosPorLetra(estado, terminal, afn));
+    		for (String letra : afn.getAlfabeto()) {
+    			mapaSimbolos.put(letra, getEstadosPorLetra(estado, letra, afn));
     		}
     		tabelaAFN.put(estado, mapaSimbolos);
     	}
@@ -102,17 +108,17 @@ public class Conversor {
     	for (int estado = 0; estado < estadosAFD.size(); estado++) {
     		Estado estadoAtual = estadosAFD.get(estado);
     		HashMap<String, Estado> valor = new HashMap<>();
-    		for (String terminal : afn.getAlfabeto()) {
+    		for (String letra : afn.getAlfabeto()) {
     			Estado novoEstado = tabelaAFN.containsKey(estadoAtual) ?
-    					getEstadoCombinado(tabelaAFN.get(estadoAtual).get(terminal)) :
-    					getEstadoCombinado(estadoAtual.getName(), terminal);
+    					getEstadoCombinado(tabelaAFN.get(estadoAtual).get(letra)) :
+    					getEstadoCombinado(estadoAtual.getName(), letra);
     			if (novoEstado != null) {
     				if (!auxNomes.contains(novoEstado.getName())) {
     					auxNomes.add(novoEstado.getName());
     					estadosAFD.add(novoEstado);
-    					valor.put(terminal, novoEstado);
+    					valor.put(letra, novoEstado);
     				} else {
-    					valor.put(terminal, novoEstado);
+    					valor.put(letra, novoEstado);
     				}
     			}
     		}
@@ -146,6 +152,7 @@ public class Conversor {
     	List<Transicao> transicoesAFD = getTransicoes(estadosAFD);
     	afd.setEstados(new HashSet<>(estadosAFD));
     	afd.setAlfabeto(afn.getAlfabeto());
+    	afd.removeSimbolo("");
     	afd.setTransicoes(new HashSet<>(transicoesAFD));
     	afd.preencheEstadosIniciaisEFinais();
     	afd.preencherPosicoes();
