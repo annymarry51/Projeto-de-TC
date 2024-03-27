@@ -14,16 +14,18 @@ public class Conversor {
     private HashMap<Estado, HashMap<String, Estado>> tabelaAFD;
     
     private void renomearIds(Automato automato) {
-        for (Transicao t : automato.getTransicoes()) {
-        	t.setFrom(inverterString(t.getFrom()).replace(",", ""));
-            t.setTo(inverterString(t.getTo()).replace(",", ""));
-        }
-
+    	for (Transicao t : automato.getTransicoes()) {
+    		Estado from = automato.getEstadoPorId(t.getFrom());
+    		Estado to = automato.getEstadoPorId(t.getTo());
+    		t.setFrom(inverterString(t.getFrom().replace(",", "").replace("-", from.isInitial() ? "-" : "")));
+    		t.setTo(inverterString(t.getTo().replace(",", "").replace("-", to.isInitial() ? "-" : "")));
+    	}
         for (Estado e : automato.getEstados()) {
-        	e.setId(inverterString(e.getId()).replace(",", ""));
+        	e.setName(e.getName().replace(",", "").replace("-1", "0"));
+        	e.setId(inverterString(e.getId()).replace(",", "").replace("-", e.isInitial() ? "-" : ""));
         }
     }
-
+    
     private String inverterString(String str) {
         return new StringBuilder(str).reverse().toString();
     }
@@ -51,12 +53,12 @@ public class Conversor {
     	return estado;
     }
     
-    private Estado getEstadoCombinado(String nome, String terminal) {
+    private Estado getEstadoCombinado(String nome, String letra) {
     	List<String> ids = Arrays.asList(nome.split(","));
     	Set<Estado> estados = new HashSet<>();
     	for (Map.Entry<Estado, HashMap<String, Set<Estado>>> i : tabelaAFN.entrySet()) {
-    		if (ids.contains(i.getKey().getId()) && i.getValue().get(terminal).size() > 0) {
-    			estados.addAll(new ArrayList<>(i.getValue().get(terminal)));
+    		if (ids.contains(i.getKey().getId()) && i.getValue().get(letra).size() > 0) {
+    			estados.addAll(new ArrayList<>(i.getValue().get(letra)));
     		}
     	}
     	return estados.size() > 0 ? getEstadoCombinado(estados) : null;

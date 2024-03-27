@@ -129,26 +129,6 @@ public class Automato {
 		}
 	}
 	
-//	private Set<Transicao> fechoEpsilon(Transicao transicao, Automato automato) {
-//    	Set<Transicao> fecho = new HashSet<>();
-//    	fecho.add(transicao);
-//    	Stack<Transicao> pilha = new Stack<>();
-//    	pilha.push(transicao);
-//    	
-//    	while (!pilha.isEmpty()) {
-//    		Estado atual = pilha.pop();
-//    		Set<Transicao> transicoes = automato.getTransicoesPorEstadoELetra(atual, "");
-//    		for (Transicao t : transicoes) {
-//    			Estado proximo = automato.getEstadoPorId(t.getTo());
-//    			if (!fecho.contains(proximo)) {
-//    				fecho.add(proximo);
-//    				pilha.push(proximo);
-//    			}
-//    		}
-//    	}
-//    	return fecho;
-//    }
-	
 	Set<Transicao> getTransicoesPorEstadoELetra(Estado e, String l) {
 		Set<Transicao> transicoes = new HashSet<>();
 		for (Transicao t : getTransicoes()) {

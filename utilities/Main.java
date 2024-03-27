@@ -13,7 +13,8 @@ public class Main {
 			System.out.println(afd);
 			Arquivo.exportarAutomato(afd, caminho.replace(".jff", "ConvertidoEmAFD.jff"));
 		} catch (IOException | NullPointerException e) {
-			System.out.println("Arquivo não carregado: " + e.getMessage());;
+			System.out.println("Arquivo não carregado: " + e.getMessage());
+			e.printStackTrace();
 		}
     }
 }
