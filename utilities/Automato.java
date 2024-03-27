@@ -10,12 +10,26 @@ public class Automato {
     private Set<Transicao> transicoes;
     private Set<String> alfabeto;
     private Set<Estado> estadosFinais;
+    private Estado estadoInicial;
     
 	public Automato() {
     	setEstados(new HashSet<>());
     	setTransicoes(new HashSet<>());
     	setAlfabeto(new HashSet<>());
     }
+	
+	Estado getEstadoInicial() {
+		return estadoInicial;
+	}
+	
+	void setEstadoInicial(Estado estadoInicial) {
+		this.estadoInicial = estadoInicial;
+	}
+	
+	void addEstadoInicial(Estado estado) {
+		if (estadoInicial == null)
+			estadoInicial = estado;
+	}
 	
 	Set<Estado> getEstadosFinais() {
 		return estadosFinais;
@@ -95,19 +109,6 @@ public class Automato {
 		sb.append("Alfabeto: " + getAlfabeto());
 		
 		return sb.toString();
-	}
-
-	public Estado getEstadoInicial() {
-		for (Estado e : estados) {
-			if (e.isInitial()) {
-				return e;
-			}
-		}
-		return null;
-	}
-	
-	public void setEstadoInicial(Estado estadoInicial) {
-		estadoInicial.setInitial(true);
 	}
 
 	Estado getEstadoPorId(String id) {

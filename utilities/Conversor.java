@@ -17,12 +17,21 @@ public class Conversor {
     	for (Transicao t : automato.getTransicoes()) {
     		Estado from = automato.getEstadoPorId(t.getFrom());
     		Estado to = automato.getEstadoPorId(t.getTo());
-    		t.setFrom(inverterString(t.getFrom().replace(",", "").replace("-", from.isInitial() ? "-" : "")));
-    		t.setTo(inverterString(t.getTo().replace(",", "").replace("-", to.isInitial() ? "-" : "")));
+    		t.setFrom(t.getFrom().replace(",", "").replace("-", from.isInitial() ? "-" : ""));
+    		t.setTo(t.getTo().replace(",", "").replace("-", to.isInitial() ? "-" : ""));
+    		if (t.getFrom().startsWith("0")) {
+    			t.setFrom(inverterString(t.getFrom()));
+    		}
+    		if (t.getTo().startsWith("0")) {
+    			t.setTo(inverterString(t.getTo()));
+    		}
     	}
         for (Estado e : automato.getEstados()) {
         	e.setName(e.getName().replace(",", "").replace("-1", "0"));
-        	e.setId(inverterString(e.getId()).replace(",", "").replace("-", e.isInitial() ? "-" : ""));
+        	e.setId(e.getId().replace(",", "").replace("-", e.isInitial() ? "-" : ""));
+        	if (e.getId().startsWith("0")) {
+        		e.setId(inverterString(e.getId()));
+        	}
         }
     }
     

@@ -111,8 +111,11 @@ public class Arquivo {
                     double y = Double.parseDouble(estadoElemento.getElementsByTagName("y").item(0).getTextContent());
                     boolean isInitial = estadoElemento.getElementsByTagName("initial").getLength() > 0;
                     boolean isFinal = estadoElemento.getElementsByTagName("final").getLength() > 0;
-
+                    
                     Estado estado = new Estado(id, name, x, y, isInitial, isFinal);
+                    if (isInitial == true) {
+                    	automato.addEstadoInicial(estado);
+                    }
                     automato.addEstado(estado);
                 }
             }
