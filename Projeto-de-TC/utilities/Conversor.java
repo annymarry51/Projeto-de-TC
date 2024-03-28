@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import javax.sound.midi.Soundbank;
+
 public class Conversor {
     private HashMap<Estado, HashMap<String, Set<Estado>>> tabelaAFN;
     private HashMap<Estado, HashMap<String, Estado>> tabelaAFD;
@@ -40,9 +42,7 @@ public class Conversor {
 			estado.setId(mapaDeEstados.get(estado.getId()));
 			estado.setName(estado.getName().replace(",", "").replace("-1", "0"));
 		}
-
-		
-    	
+ 	
     }
     
     private Set<Estado> getEstadosPorLetra(Estado estado, String letra, Automato afn) {
@@ -119,17 +119,6 @@ public class Conversor {
     	return estados;
     }
 
-    private void removerEstadoSemTransicao(Automato afn) {
-		Iterator<Estado> iterator = afn.getEstados().iterator();
-		while (iterator.hasNext()) {
-			Estado e = iterator.next();
-			if (afn.getTransicoesPorEstado(e).isEmpty()) {
-				iterator.remove();
-				tabelaAFD.remove(e);
-
-			}
-		}
-	}
 	
     private List<Estado> construirTabelaAFDEPegaEstados(Automato afn) {
     	List<Estado> estadosAFD = new ArrayList<>();
@@ -174,22 +163,37 @@ public class Conversor {
     	}
     	return transicoes;
     }
-    
+
+    private void removerEstadoSemTransicao(Automato afn) {
+		Iterator<Estado> iterator = afn.getEstados().iterator();
+		while (iterator.hasNext()) {
+			Estado estado = iterator.next();
+			if (afn.getTransicoesPorEstado(estado).isEmpty() && afn.getTransicoesParaEstado(estado).isEmpty()) {
+				iterator.remove(); // Remove o estado da coleção principal
+				//remova também do mapa tabelaAFD
+				if (tabelaAFD.containsKey(estado)) {
+					tabelaAFD.remove(estado);
+				}
+				System.out.println("Estado removido: " + estado); // Mensagem de confirmação
+			}
+		}
+	}
+	
     private Automato converterAFNParaAFD(Automato afn) {
     	Automato afd = new Automato();
     	preencherTabelaAFN(afn);
     	List<Estado> estadosAFD = construirTabelaAFDEPegaEstados(afn);
-    	//if (!afn.temLoop(afn.getEstadoInicial()))
-    	estadosAFD.add(afn.getEstadoInicial());
     	List<Transicao> transicoesAFD = getTransicoes(estadosAFD);
+    	estadosAFD.add(afn.getEstadoInicial());
     	afd.setEstados(new HashSet<>(estadosAFD));
     	afd.setAlfabeto(afn.getAlfabeto());
     	afd.removeSimbolo("");
     	afd.setTransicoes(new HashSet<>(transicoesAFD));
     	afd.preencheEstadosIniciaisEFinais();
     	afd.preencherPosicoes();
-		removerEstadoSemTransicao(afn);
+		removerEstadoSemTransicao(afd);
     	renomearIds(afd);
+			
     	return afd;
     }
     

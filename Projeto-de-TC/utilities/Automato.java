@@ -147,6 +147,16 @@ public class Automato {
 		}
 		return transicoes;
 	}
+
+	//para conferir se o estado recebe alguma transição...
+	Set<Transicao> getTransicoesParaEstado(Estado e) {
+		Set<Transicao> transicoes = new HashSet<>();
+		for (Transicao t : getTransicoes()) {
+			if (t.getTo().equals(e.getId()))
+				transicoes.add(t);
+		}
+		return transicoes;
+	}
 	
 	boolean temLoop(Estado estadoInicial) {
 		Set<Transicao> transicoes = getTransicoesPorEstado(estadoInicial);
