@@ -2,17 +2,17 @@ package utilities;
 
 public class Transicao {
 	private String from;
-    private String to;
-    private String read;
+	private String to;
+	private String read;
 
-    public Transicao() {
-    }
+	public Transicao() {
+	}
 
-    public Transicao(String from, String to, String read) {
-        setFrom(from);
-        setTo(to);
-        setRead(read);
-    }
+	public Transicao(String from, String to, String read) {
+		setFrom(from);
+		setTo(to);
+		setRead(read);
+	}
 
 	String getFrom() {
 		return from;
@@ -37,11 +37,11 @@ public class Transicao {
 	private void setRead(String read) {
 		this.read = read;
 	}
-	
+
 	boolean isLambda() {
 		return getRead().equals("");
 	}
-    
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

@@ -11,13 +11,31 @@ public class Estado {
     private boolean isInitial;
     private boolean isFinal;
     private Set<Estado> estadosCombinados;
+	private String label = "";
+
+	public void addLabel(String label)
+	{
+		this.label = this.label + label;
+	}
     
+	public Estado copyWith()
+	{
+		Estado copyWith = new Estado(id,name,x,y,isInitial,isFinal);
+		copyWith.label = label;
+
+		return copyWith;
+	}
+
     public Estado() {
     }
     
     public Estado(String id, String name) {
     	setId(id);
     	setName(name);
+    }
+	public Estado(String id, String name, double x, double y, boolean isInitial, boolean isFinal,String label) {
+    	this(id, name,x,y,isInitial,isFinal);
+    	this.label = label;
     }
 
     public Estado(String id, String name, double x, double y, boolean isInitial, boolean isFinal) {
@@ -111,6 +129,15 @@ public class Estado {
 			setEstadosCombinados(new HashSet<>());
 		getEstadosCombinados().add(estado);
 	}
+
+	public String getLabel()
+	{
+		return label;
+	}
+	public void setLabel(String label)
+	{
+		this.label = label;
+	}
 	
 	@Override
 	public String toString() {
@@ -121,6 +148,10 @@ public class Estado {
 		sb.append(String.format("Y: %f\n", getY()));
 		sb.append(String.format("Inicial: %s\n", isInitial()));
 		sb.append(String.format("Final: %s\n", isFinal()));
+		if(label != null && label.length() > 0)
+		{
+			sb.append(String.format("Label: %s\n", label));
+		}
 		return sb.toString();
 	}
 }

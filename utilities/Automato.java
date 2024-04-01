@@ -1,9 +1,8 @@
 package utilities;
 
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 
 public class Automato {
     private Set<Estado> estados;
@@ -17,6 +16,7 @@ public class Automato {
     	setTransicoes(new HashSet<>());
     	setAlfabeto(new HashSet<>());
     }
+
 	
 	Estado getEstadoInicial() {
 		return estadoInicial;
@@ -107,7 +107,6 @@ public class Automato {
 			sb.append(t);
 		}
 		sb.append("Alfabeto: " + getAlfabeto());
-		
 		return sb.toString();
 	}
 
@@ -147,6 +146,16 @@ public class Automato {
 		}
 		return transicoes;
 	}
+
+	//para conferir se o estado recebe alguma transição...
+	Set<Transicao> getTransicoesParaEstado(Estado e) {
+		Set<Transicao> transicoes = new HashSet<>();
+		for (Transicao t : getTransicoes()) {
+			if (t.getTo().equals(e.getId()))
+				transicoes.add(t);
+		}
+		return transicoes;
+	}
 	
 	boolean temLoop(Estado estadoInicial) {
 		Set<Transicao> transicoes = getTransicoesPorEstado(estadoInicial);
@@ -177,4 +186,32 @@ public class Automato {
 		}
 	}
 
+
+	public static String colocarVirvula(String str)
+	{
+		if(str == null || str.isEmpty())
+			return str;
+		StringBuilder labelComVirgula = new StringBuilder();
+        for(int i=0;i<str.length();i++)
+        {
+            labelComVirgula.append(str.charAt(i));
+            if(i != str.length() -1)
+                labelComVirgula.append(",");
+        }
+		return labelComVirgula.toString();
+	}
+	public static String ordenarLabel(String label)
+    {
+        label = removerVirgula(label);
+        String str = label;
+		char[] chars = str.toCharArray();
+		Arrays.sort(chars);
+		label = new String(chars);
+        return label.toString();
+    }
+	public static String removerVirgula(String str)
+    {
+        //se o label = 0,2,3 entao retorna 023
+        return String.join("", str.split(","));
+    }
 }

@@ -2,41 +2,45 @@ package utilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
 public class Conversor {
     private HashMap<Estado, HashMap<String, Set<Estado>>> tabelaAFN;
     private HashMap<Estado, HashMap<String, Estado>> tabelaAFD;
     
     private void renomearIds(Automato automato) {
-    	for (Transicao t : automato.getTransicoes()) {
-    		Estado from = automato.getEstadoPorId(t.getFrom());
-    		Estado to = automato.getEstadoPorId(t.getTo());
-    		t.setFrom(t.getFrom().replace(",", "").replace("-", from.isInitial() ? "-" : ""));
-    		t.setTo(t.getTo().replace(",", "").replace("-", to.isInitial() ? "-" : ""));
-    		if (t.getFrom().startsWith("0")) {
-    			t.setFrom(inverterString(t.getFrom()));
-    		}
-    		if (t.getTo().startsWith("0")) {
-    			t.setTo(inverterString(t.getTo()));
-    		}
-    	}
-        for (Estado e : automato.getEstados()) {
-        	e.setName(e.getName().replace(",", "").replace("-1", "0"));
-        	e.setId(e.getId().replace(",", "").replace("-", e.isInitial() ? "-" : ""));
-        	if (e.getId().startsWith("0")) {
-        		e.setId(inverterString(e.getId()));
-        	}
-        }
-    }
-    
-    private String inverterString(String str) {
-        return new StringBuilder(str).reverse().toString();
+		int idNovo = 0;
+		ArrayList<Estado> estadoAux = new ArrayList<>(automato.getEstados());
+		//colocar os estados em ordem
+		Collections.sort(estadoAux, Comparator.comparing(Estado::getId));
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		Map<String,String> mapaDeEstados = new HashMap();
+
+		//Aqui vai mapeando os ids e já gurdando o novo id dos estados...
+		for (Estado estado : estadoAux) {
+			mapaDeEstados.put(estado.getId(), Integer.toString(idNovo));
+			idNovo++;
+		}
+		
+		//Alternando os nomes ids das transições...
+		for (Transicao transicao : automato.getTransicoes()) {
+			transicao.setFrom(mapaDeEstados.get(transicao.getFrom()));
+			transicao.setTo(mapaDeEstados.get(transicao.getTo()));
+		}
+
+		//Aqui vai atualizar os nomes dos Ids e também seus respectivos nomes
+		for (Estado estado : automato.getEstados()) {
+			estado.setId(mapaDeEstados.get(estado.getId()));
+			estado.setName(estado.getName().replace(",", "").replace("-1", "0"));
+		}
+ 	
     }
     
     private Set<Estado> getEstadosPorLetra(Estado estado, String letra, Automato afn) {
@@ -100,16 +104,20 @@ public class Conversor {
     			if (e.isFinal())
     				estado.setFinal(true);
     			if (e.getId().equals(afn.getEstadoInicial().getId()) && estado.getEstadosCombinados().size() == 1)
+				{
     				estado.setInitial(true);
+					afn.getEstadoInicial();
+					estados.remove(afn.getEstadoInicial());
+					tabelaAFD.remove(afn.getEstadoInicial());
+				}
     		}
     	}
-    	if (afn.temLoop(afn.getEstadoInicial())) {
-    		estados.remove(afn.getEstadoInicial());
-    		tabelaAFD.remove(afn.getEstadoInicial());
-    	}
+		
+    	
     	return estados;
     }
-    
+
+	
     private List<Estado> construirTabelaAFDEPegaEstados(Automato afn) {
     	List<Estado> estadosAFD = new ArrayList<>();
     	estadosAFD.add(afn.getEstadoInicial());
@@ -153,21 +161,37 @@ public class Conversor {
     	}
     	return transicoes;
     }
-    
+
+    private void removerEstadoSemTransicao(Automato afn) {
+		Iterator<Estado> iterator = afn.getEstados().iterator();
+		while (iterator.hasNext()) {
+			Estado estado = iterator.next();
+			if (afn.getTransicoesPorEstado(estado).isEmpty() && afn.getTransicoesParaEstado(estado).isEmpty()) {
+				iterator.remove(); // Remove o estado da coleção principal
+				//remova também do mapa tabelaAFD
+				if (tabelaAFD.containsKey(estado)) {
+					tabelaAFD.remove(estado);
+				}
+				System.out.println("Estado removido: " + estado); // Mensagem de confirmação
+			}
+		}
+	}
+	
     private Automato converterAFNParaAFD(Automato afn) {
     	Automato afd = new Automato();
     	preencherTabelaAFN(afn);
     	List<Estado> estadosAFD = construirTabelaAFDEPegaEstados(afn);
-    	if (!afn.temLoop(afn.getEstadoInicial()))
-    		estadosAFD.add(afn.getEstadoInicial());
     	List<Transicao> transicoesAFD = getTransicoes(estadosAFD);
+    	estadosAFD.add(afn.getEstadoInicial());
     	afd.setEstados(new HashSet<>(estadosAFD));
     	afd.setAlfabeto(afn.getAlfabeto());
     	afd.removeSimbolo("");
     	afd.setTransicoes(new HashSet<>(transicoesAFD));
     	afd.preencheEstadosIniciaisEFinais();
     	afd.preencherPosicoes();
+		removerEstadoSemTransicao(afd);
     	renomearIds(afd);
+			
     	return afd;
     }
     

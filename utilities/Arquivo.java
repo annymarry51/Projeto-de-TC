@@ -15,37 +15,38 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class Arquivo {
-	private String caminho;
-	
-	public String getCaminho() {
-		return caminho;
-	}
-	
-	public void setCaminho(String caminho) {
-		this.caminho = caminho;
-	}
-	
-	public static String obterCaminho() {
-		try {
-			FileNameExtensionFilter arqFiltro = new FileNameExtensionFilter("Somente arquivos .jff", ".jff");
-			JFileChooser escolhe = new JFileChooser();
-			escolhe.setAcceptAllFileFilterUsed(true);
-			escolhe.addChoosableFileFilter(arqFiltro);
-			escolhe.setDialogTitle("Selecione um arquivo .jff");
-			if (escolhe.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-				File arquivo = escolhe.getSelectedFile();
-				String caminho = arquivo.getAbsolutePath();
-				return caminho;
-			} else {
-				return null;
-			}
-		} catch (Exception e) {
-			System.out.println("Erro: " + e.getMessage());
-			return null;
-		}
-	}
-	
-	public static void exportarAutomato(Automato automato, String diretorio) throws IOException {
+    private String caminho;
+
+    public String getCaminho() {
+        return caminho;
+    }
+
+    public void setCaminho(String caminho) {
+        this.caminho = caminho;
+    }
+
+    public static String obterCaminho() {
+        try {
+            FileNameExtensionFilter arqFiltro = new FileNameExtensionFilter("Somentearquivos .jff", ".jff");
+            JFileChooser escolhe = new JFileChooser();
+            escolhe.setAcceptAllFileFilterUsed(true);
+            escolhe.addChoosableFileFilter(arqFiltro);
+            escolhe.setDialogTitle("Selecione um arquivo .jff");
+            if (escolhe.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                File arquivo = escolhe.getSelectedFile();
+                String caminho = arquivo.getAbsolutePath();
+                return caminho;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            System.out.println("Erro: " + e.getMessage());
+            return null;
+        }
+        // return "C:\\dev\\Teste\\Ana\\Projeto-de-TC\\Projeto-de-TC\\teste1.jff";
+    }
+
+    public static void exportarAutomato(Automato automato, String diretorio) throws IOException {
         File arquivo = new File(diretorio);
         FileWriter writer = new FileWriter(arquivo);
 
@@ -54,7 +55,9 @@ public class Arquivo {
         writer.write("\t<type>fa</type>&#13;\n");
         writer.write("\t<automaton>&#13;\n");
         writer.write("\t\t<!--The list of states.-->&#13;\n");
-
+        System.err.println(automato.getEstados().toString());
+        System.err.println(automato.getEstados().size());
+        // System.exit(0);
         // Escreve os estados
         for (Estado estado : automato.getEstados()) {
             writer.write("\t\t<state id=\"" + estado.getId() + "\" name=\"" + estado.getName() + "\">&#13;\n");
@@ -65,6 +68,10 @@ public class Arquivo {
             }
             if (estado.isFinal()) {
                 writer.write("\t\t\t<final/>&#13;\n");
+            }
+            if (estado.getLabel().length() > 0) {
+                System.err.println(estado.getLabel());
+                writer.write("\t\t\t<label>" + Automato.colocarVirvula(estado.getLabel()) + "</label>&#13;\n");
             }
             writer.write("\t\t</state>&#13;\n");
         }
@@ -90,8 +97,8 @@ public class Arquivo {
         writer.close();
     }
 
-	public static Automato carregaArquivo(String caminho) {
-		try {
+    public static Automato carregaArquivo(String caminho) {
+        try {
             File arquivoEntrada = new File(caminho);
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -111,15 +118,15 @@ public class Arquivo {
                     double y = Double.parseDouble(estadoElemento.getElementsByTagName("y").item(0).getTextContent());
                     boolean isInitial = estadoElemento.getElementsByTagName("initial").getLength() > 0;
                     boolean isFinal = estadoElemento.getElementsByTagName("final").getLength() > 0;
-                    
+
                     Estado estado = new Estado(id, name, x, y, isInitial, isFinal);
                     if (isInitial == true) {
-                    	automato.addEstadoInicial(estado);
+                        automato.addEstadoInicial(estado);
                     }
                     automato.addEstado(estado);
                 }
             }
-            
+
             NodeList listaTransicoes = doc.getElementsByTagName("transition");
             for (int j = 0; j < listaTransicoes.getLength(); j++) {
                 Node noTransicao = listaTransicoes.item(j);
@@ -128,16 +135,16 @@ public class Arquivo {
                     String from = elementoTransicao.getElementsByTagName("from").item(0).getTextContent();
                     String to = elementoTransicao.getElementsByTagName("to").item(0).getTextContent();
                     String read = elementoTransicao.getElementsByTagName("read").item(0).getTextContent();
-                    
-                   	Transicao transicao = new Transicao(from, to, read);
-                   	automato.addTransicao(transicao);
-                   	automato.addSimbolo(read);
+
+                    Transicao transicao = new Transicao(from, to, read);
+                    automato.addTransicao(transicao);
+                    automato.addSimbolo(read);
                 }
             }
             return automato;
         } catch (Exception e) {
-        	System.out.println("Arquivo nulo: " + e.getMessage());
+            System.out.println("Arquivo nulo: " + e.getMessage());
         }
-		return null;
-	}
+        return null;
+    }
 }
