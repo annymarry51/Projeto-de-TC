@@ -1,52 +1,57 @@
 package utilities;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.HashSet;
 
 public class Estado {
-    private String id;
-    private String name;
-    private double x;
-    private double y;
-    private boolean isInitial;
-    private boolean isFinal;
-    private Set<Estado> estadosCombinados;
-	private String label = "";
+	private String id;
+	private String name;
+	private double x;
+	private double y;
+	private boolean isInitial;
+	private boolean isFinal;
+	private Set<String> label;
 
-	public void addLabel(String label)
-	{
-		this.label = this.label + label;
+	public void setLabel(Set<String> label) {
+		this.label = label;
 	}
-    
-	public Estado copyWith()
-	{
-		Estado copyWith = new Estado(id,name,x,y,isInitial,isFinal);
-		copyWith.label = label;
 
+	public Set<String> getLabel() {
+		if (label == null)
+			return new HashSet<>();
+		return label;
+	}
+
+	public Estado copyWith() {
+		Estado copyWith = new Estado(id, name, x, y, isInitial, isFinal);
+		copyWith.label = label;
 		return copyWith;
 	}
 
-    public Estado() {
-    }
-    
-    public Estado(String id, String name) {
-    	setId(id);
-    	setName(name);
-    }
-	public Estado(String id, String name, double x, double y, boolean isInitial, boolean isFinal,String label) {
-    	this(id, name,x,y,isInitial,isFinal);
-    	this.label = label;
-    }
+	public Estado() {
+	}
 
-    public Estado(String id, String name, double x, double y, boolean isInitial, boolean isFinal) {
-    	this(id, name);
-    	setX(x);
-    	setY(y);
-    	setInitial(isInitial);
-    	setFinal(isFinal);
-    }
-    
-    String getId() {
+	public Estado(String id, String name) {
+		setId(id);
+		setName(name);
+	}
+
+	public Estado(String id, String name, double x, double y, boolean isInitial, boolean isFinal, Set<String> label) {
+		this(id, name, x, y, isInitial, isFinal);
+		this.label = label;
+		if (label == null)
+			setLabel(new HashSet<>());
+	}
+
+	public Estado(String id, String name, double x, double y, boolean isInitial, boolean isFinal) {
+		this(id, name);
+		setX(x);
+		setY(y);
+		setInitial(isInitial);
+		setFinal(isFinal);
+	}
+
+	String getId() {
 		return id;
 	}
 
@@ -79,7 +84,7 @@ public class Estado {
 	}
 
 	boolean isInitial() {
-		return isCombinado() ? verificaEstadoCombinadoInicial() : isInitial;
+		return isInitial;
 	}
 
 	void setInitial(boolean isInitial) {
@@ -87,58 +92,13 @@ public class Estado {
 	}
 
 	boolean isFinal() {
-		return isCombinado() ? verificaEstadosCombinados() : isFinal;
+		return isFinal;
 	}
 
 	void setFinal(boolean isFinal) {
 		this.isFinal = isFinal;
 	}
-	
-	Set<Estado> getEstadosCombinados() {
-		return estadosCombinados;
-	}
-	
-	void setEstadosCombinados(Set<Estado> estadosCombinados) {
-		this.estadosCombinados = estadosCombinados;
-	}
-	
-	boolean isCombinado() {
-		if (getEstadosCombinados() != null && getEstadosCombinados().size() > 0)
-			return true;
-		return false;
-	}
-	
-	boolean verificaEstadoCombinadoInicial() {
-		for (Estado e : getEstadosCombinados()) {
-			if (e.isInitial())
-				return getEstadosCombinados().size() == 1;
-		}
-		return false;
-	}
-	
-	boolean verificaEstadosCombinados() {
-		for (Estado e : getEstadosCombinados()) {
-			if (e.isFinal())
-				return true;
-		}
-		return false;
-	}
-	
-	void addEstadoCombinado(Estado estado) {
-		if (getEstadosCombinados() == null)
-			setEstadosCombinados(new HashSet<>());
-		getEstadosCombinados().add(estado);
-	}
 
-	public String getLabel()
-	{
-		return label;
-	}
-	public void setLabel(String label)
-	{
-		this.label = label;
-	}
-	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -148,9 +108,12 @@ public class Estado {
 		sb.append(String.format("Y: %f\n", getY()));
 		sb.append(String.format("Inicial: %s\n", isInitial()));
 		sb.append(String.format("Final: %s\n", isFinal()));
-		if(label != null && label.length() > 0)
-		{
-			sb.append(String.format("Label: %s\n", label));
+		if (label != null && label.size() > 0) {
+			sb.append("Label: ");
+			for (String string : label) {
+				sb.append(string + " | ");
+			}
+			sb.append("\n");
 		}
 		return sb.toString();
 	}

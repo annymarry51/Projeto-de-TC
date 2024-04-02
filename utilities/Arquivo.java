@@ -43,7 +43,7 @@ public class Arquivo {
             System.out.println("Erro: " + e.getMessage());
             return null;
         }
-        // return "C:\\dev\\Teste\\Ana\\Projeto-de-TC\\Projeto-de-TC\\teste1.jff";
+        // return "C:\\dev\\Teste\\Ana\\Projeto-de-TC\\Projeto-de-TC\\Automato.jff";
     }
 
     public static void exportarAutomato(Automato automato, String diretorio) throws IOException {
@@ -55,9 +55,6 @@ public class Arquivo {
         writer.write("\t<type>fa</type>&#13;\n");
         writer.write("\t<automaton>&#13;\n");
         writer.write("\t\t<!--The list of states.-->&#13;\n");
-        System.err.println(automato.getEstados().toString());
-        System.err.println(automato.getEstados().size());
-        // System.exit(0);
         // Escreve os estados
         for (Estado estado : automato.getEstados()) {
             writer.write("\t\t<state id=\"" + estado.getId() + "\" name=\"" + estado.getName() + "\">&#13;\n");
@@ -69,9 +66,9 @@ public class Arquivo {
             if (estado.isFinal()) {
                 writer.write("\t\t\t<final/>&#13;\n");
             }
-            if (estado.getLabel().length() > 0) {
-                System.err.println(estado.getLabel());
-                writer.write("\t\t\t<label>" + Automato.colocarVirvula(estado.getLabel()) + "</label>&#13;\n");
+            if (estado.getLabel().size() > 0) {
+
+                writer.write("\t\t\t<label>" + Automato.retornarLabelComVirgula(estado.getLabel()) + "</label>&#13;\n");
             }
             writer.write("\t\t</state>&#13;\n");
         }
@@ -138,7 +135,6 @@ public class Arquivo {
 
                     Transicao transicao = new Transicao(from, to, read);
                     automato.addTransicao(transicao);
-                    automato.addSimbolo(read);
                 }
             }
             return automato;

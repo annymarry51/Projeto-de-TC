@@ -1,100 +1,59 @@
 package utilities;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public class Automato {
-    private Set<Estado> estados;
-    private Set<Transicao> transicoes;
-    private Set<String> alfabeto;
-    private Set<Estado> estadosFinais;
-    private Estado estadoInicial;
-    
-	public Automato() {
-    	setEstados(new HashSet<>());
-    	setTransicoes(new HashSet<>());
-    	setAlfabeto(new HashSet<>());
-    }
+	private Set<Estado> estados;
+	private Set<Transicao> transicoes;
+	private Estado estadoInicial;
 
-	
+	public Automato() {
+		setEstados(new HashSet<>());
+		setTransicoes(new HashSet<>());
+	}
+
 	Estado getEstadoInicial() {
 		return estadoInicial;
 	}
-	
+
 	void setEstadoInicial(Estado estadoInicial) {
 		this.estadoInicial = estadoInicial;
 	}
-	
+
 	void addEstadoInicial(Estado estado) {
 		if (estadoInicial == null)
 			estadoInicial = estado;
 	}
-	
-	Set<Estado> getEstadosFinais() {
-		return estadosFinais;
-	}
-	
-	void setEstadosFinais(Set<Estado> estadosFinais) {
-		this.estadosFinais = estadosFinais;
-	}
-	
-	void addEstadoFinal(Estado e) {
-		if (estadosFinais == null)
-			setEstadosFinais(new HashSet<>());
-		estadosFinais.add(e);
-	}
-	
-	Set<String> getAlfabeto() {
-		return alfabeto;
-	}
-	
-	void setAlfabeto(Set<String> alfabeto) {
-		this.alfabeto = alfabeto;
-	}
-	
-	void addSimbolo(String s) {
-		if (getAlfabeto() == null)
-			setAlfabeto(new HashSet<>());;
-		getAlfabeto().add(s);
-	}
-	
-	void removeSimbolo(String s) {
-		getAlfabeto().remove(s);
-	}
-	
+
 	void addTransicao(Transicao t) {
 		if (transicoes == null)
 			setTransicoes(new HashSet<>());
 		transicoes.add(t);
 	}
-    
-    void setTransicoes(Set<Transicao> transicoes) {
+
+	void setTransicoes(Set<Transicao> transicoes) {
 		this.transicoes = transicoes;
 	}
-    
-    Set<Transicao> getTransicoes() {
-    	return transicoes;
-    }
-    
-    public Automato(Set<Estado> estados) {
-    	setEstados(estados);
-    }
+
+	Set<Transicao> getTransicoes() {
+		return transicoes;
+	}
 
 	Set<Estado> getEstados() {
 		return estados;
 	}
-	
+
 	void setEstados(Set<Estado> estados) {
 		this.estados = estados;
 	}
-	
+
 	void addEstado(Estado e) {
 		if (getEstados() == null)
 			setEstados(new HashSet<>());
 		estados.add(e);
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -106,7 +65,6 @@ public class Automato {
 		for (Transicao t : getTransicoes()) {
 			sb.append(t);
 		}
-		sb.append("Alfabeto: " + getAlfabeto());
 		return sb.toString();
 	}
 
@@ -118,26 +76,7 @@ public class Automato {
 		}
 		return null;
 	}
-	
-	void preencheEstadosIniciaisEFinais() {
-		for (Estado e : getEstados()) {
-			if (e.isFinal())
-				addEstadoFinal(e);
-			if (e.isInitial()) {
-				setEstadoInicial(e);
-			}
-		}
-	}
-	
-	Set<Transicao> getTransicoesPorEstadoELetra(Estado e, String l) {
-		Set<Transicao> transicoes = new HashSet<>();
-		for (Transicao t : getTransicoes()) {
-			if (t.getFrom().equals(e.getId()) && t.getRead().equals(l))
-				transicoes.add(t);
-		}
-		return transicoes;
-	}
-	
+
 	Set<Transicao> getTransicoesPorEstado(Estado e) {
 		Set<Transicao> transicoes = new HashSet<>();
 		for (Transicao t : getTransicoes()) {
@@ -147,71 +86,28 @@ public class Automato {
 		return transicoes;
 	}
 
-	//para conferir se o estado recebe alguma transição...
-	Set<Transicao> getTransicoesParaEstado(Estado e) {
-		Set<Transicao> transicoes = new HashSet<>();
-		for (Transicao t : getTransicoes()) {
-			if (t.getTo().equals(e.getId()))
-				transicoes.add(t);
-		}
-		return transicoes;
-	}
-	
-	boolean temLoop(Estado estadoInicial) {
-		Set<Transicao> transicoes = getTransicoesPorEstado(estadoInicial);
-		for (Transicao t : transicoes) {
-			if (t.getTo().equals(estadoInicial.getId()))
-				return true;
+	boolean isAFN(Automato afn) {
+		for (Transicao t : afn.getTransicoes()) {
+			for (Transicao tr : afn.getTransicoes()) {
+				if (t != tr && // Evita comparar a mesma transição consigo mesma
+						t.getFrom().equals(tr.getFrom()) &&
+						(t.getRead().equals(tr.getRead()) || t.getRead().isEmpty() && !tr.getRead().isEmpty())) {
+					return true;
+				}
+			}
 		}
 		return false;
 	}
-	
-	boolean isAFN(Automato afn) {
-		  for (Transicao t : afn.getTransicoes()) {
-		    for (Transicao tr : afn.getTransicoes()) {
-		      if (t != tr &&  // Evita comparar a mesma transição consigo mesma
-		          t.getFrom().equals(tr.getFrom()) && 
-		          (t.getRead().equals(tr.getRead()) || t.getRead().isEmpty() && !tr.getRead().isEmpty())) {
-		        return true;
-		      }
-		    }
-		  }
-		  return false;
-		}
-	
-	void preencherPosicoes() {
-		for (Estado e : getEstados()) {
-			e.setX((int) ((Math.random() * 100) * Math.random() * 10));
-			e.setY((int) ((Math.random() * 100) * Math.random() * 10));
-		}
-	}
 
-
-	public static String colocarVirvula(String str)
-	{
-		if(str == null || str.isEmpty())
-			return str;
+	public static String retornarLabelComVirgula(Set<String> str) {
+		if (str == null || str.size() == 0)
+			return "";
 		StringBuilder labelComVirgula = new StringBuilder();
-        for(int i=0;i<str.length();i++)
-        {
-            labelComVirgula.append(str.charAt(i));
-            if(i != str.length() -1)
-                labelComVirgula.append(",");
-        }
+		for (String label : str) {
+			if (labelComVirgula.length() > 0)
+				labelComVirgula.append(",");
+			labelComVirgula.append(label);
+		}
 		return labelComVirgula.toString();
 	}
-	public static String ordenarLabel(String label)
-    {
-        label = removerVirgula(label);
-        String str = label;
-		char[] chars = str.toCharArray();
-		Arrays.sort(chars);
-		label = new String(chars);
-        return label.toString();
-    }
-	public static String removerVirgula(String str)
-    {
-        //se o label = 0,2,3 entao retorna 023
-        return String.join("", str.split(","));
-    }
 }
