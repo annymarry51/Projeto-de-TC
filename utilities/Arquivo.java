@@ -43,55 +43,60 @@ public class Arquivo {
             System.out.println("Erro: " + e.getMessage());
             return null;
         }
-        // return "C:\\dev\\Teste\\Ana\\Projeto-de-TC\\Projeto-de-TC\\Automato.jff";
     }
 
-    public static void exportarAutomato(Automato automato, String diretorio) throws IOException {
-        File arquivo = new File(diretorio);
-        FileWriter writer = new FileWriter(arquivo);
+    public static void exportarAutomato(Automato automato) throws IOException {
+    	JFileChooser escolhe = new JFileChooser();
+    	escolhe.setDialogTitle("Salve o arquivo .jff");
+    	if (escolhe.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+    		File arquivo = escolhe.getSelectedFile();
+    		arquivo = new File(arquivo.getAbsoluteFile() + ".jff");
 
-        writer.write(
-                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><structure>&#13;\n");
-        writer.write("\t<type>fa</type>&#13;\n");
-        writer.write("\t<automaton>&#13;\n");
-        writer.write("\t\t<!--The list of states.-->&#13;\n");
-        // Escreve os estados
-        for (Estado estado : automato.getEstados()) {
-            writer.write("\t\t<state id=\"" + estado.getId() + "\" name=\"" + estado.getName() + "\">&#13;\n");
-            writer.write("\t\t\t<x>" + estado.getX() + "</x>&#13;\n");
-            writer.write("\t\t\t<y>" + estado.getY() + "</y>&#13;\n");
-            if (estado.isInitial()) {
-                writer.write("\t\t\t<initial/>&#13;\n");
-            }
-            if (estado.isFinal()) {
-                writer.write("\t\t\t<final/>&#13;\n");
-            }
-            if (estado.getLabel().size() > 0) {
+    		FileWriter writer = new FileWriter(arquivo);
 
-                writer.write("\t\t\t<label>" + Automato.retornarLabelComVirgula(estado.getLabel()) + "</label>&#13;\n");
-            }
-            writer.write("\t\t</state>&#13;\n");
-        }
+    		writer.write(
+    				"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><structure>&#13;\n");
+    		writer.write("\t<type>fa</type>&#13;\n");
+    		writer.write("\t<automaton>&#13;\n");
+    		writer.write("\t\t<!--The list of states.-->&#13;\n");
+    		// Escreve os estados
+    		for (Estado estado : automato.getEstados()) {
+    			writer.write("\t\t<state id=\"" + estado.getId() + "\" name=\"" + estado.getName() + "\">&#13;\n");
+    			writer.write("\t\t\t<x>" + estado.getX() + "</x>&#13;\n");
+    			writer.write("\t\t\t<y>" + estado.getY() + "</y>&#13;\n");
+    			if (estado.isInitial()) {
+    				writer.write("\t\t\t<initial/>&#13;\n");
+    			}
+    			if (estado.isFinal()) {
+    				writer.write("\t\t\t<final/>&#13;\n");
+    			}
+    			if (estado.getLabel().size() > 0) {
 
-        writer.write("\t\t<!--The list of transitions.-->&#13;\n");
+    				writer.write("\t\t\t<label>" + Automato.retornarLabelComVirgula(estado.getLabel()) + "</label>&#13;\n");
+    			}
+    			writer.write("\t\t</state>&#13;\n");
+    		}
 
-        // Escreve as transições
-        for (Transicao transicao : automato.getTransicoes()) {
-            writer.write("\t\t<transition>&#13;\n");
-            writer.write("\t\t\t<from>" + transicao.getFrom() + "</from>&#13;\n");
-            writer.write("\t\t\t<to>" + transicao.getTo() + "</to>&#13;\n");
-            // Caso a transição seja epsilon
-            if (transicao.getRead().isBlank()) {
-                writer.write("\t\t\t<read/>\n");
-            } else {
-                writer.write("\t\t\t<read>" + transicao.getRead() + "</read>&#13;\n");
-            }
-            writer.write("\t\t</transition>&#13;\n");
-        }
+    		writer.write("\t\t<!--The list of transitions.-->&#13;\n");
 
-        writer.write("\t</automaton>&#13;\n");
-        writer.write("</structure>");
-        writer.close();
+    		// Escreve as transições
+    		for (Transicao transicao : automato.getTransicoes()) {
+    			writer.write("\t\t<transition>&#13;\n");
+    			writer.write("\t\t\t<from>" + transicao.getFrom() + "</from>&#13;\n");
+    			writer.write("\t\t\t<to>" + transicao.getTo() + "</to>&#13;\n");
+    			// Caso a transição seja epsilon
+    			if (transicao.getRead().isBlank()) {
+    				writer.write("\t\t\t<read/>\n");
+    			} else {
+    				writer.write("\t\t\t<read>" + transicao.getRead() + "</read>&#13;\n");
+    			}
+    			writer.write("\t\t</transition>&#13;\n");
+    		}
+
+    		writer.write("\t</automaton>&#13;\n");
+    		writer.write("</structure>");
+    		writer.close();
+    	}
     }
 
     public static Automato carregaArquivo(String caminho) {

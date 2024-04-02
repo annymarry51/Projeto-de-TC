@@ -38,10 +38,6 @@ public class Transicao {
 		this.read = read;
 	}
 
-	boolean isLambda() {
-		return getRead().equals("");
-	}
-
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
